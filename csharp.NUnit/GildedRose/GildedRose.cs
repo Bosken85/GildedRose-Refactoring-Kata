@@ -1,89 +1,97 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace GildedRoseKata;
 
 public class GildedRose
 {
-    IList<Item> Items;
+    public readonly IList<Item> Items;
 
-    public GildedRose(IList<Item> Items)
+    public GildedRose(IList<Item> items)
     {
-        this.Items = Items;
+        ArgumentNullException.ThrowIfNull(items);
+
+        this.Items = items;
     }
 
     public void UpdateQuality()
     {
-        for (var i = 0; i < Items.Count; i++)
+        try
         {
-            if (Items[i].Name != "Aged Brie" && Items[i].Name != "Backstage passes to a TAFKAL80ETC concert")
+            for (var i = 0; i < Items.Count; i++)
             {
-                if (Items[i].Quality > 0)
-                {
-                    if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
+                var item = Items[i];
+                UpdateQuality(item);
+            }
+        }
+        catch (Exception)
+        {
+            //Handle exception
+        }
+    }
+
+    private void UpdateQuality(Item item)
+    {
+        try
+        {
+            string itemType = DeterminType(item);
+
+            switch (itemType)
+            {
+                case GildedRoseConstants.AgedBrie:
+                    item.Quality += item.SellIn <= 0 ? 2 : 1;
+                    break;
+                case GildedRoseConstants.BackstagePasses:
+                    if (item.SellIn <= 0)
                     {
-                        Items[i].Quality = Items[i].Quality - 1;
+                        item.Quality = 0;
                     }
-                }
-            }
-            else
-            {
-                if (Items[i].Quality < 50)
-                {
-                    Items[i].Quality = Items[i].Quality + 1;
-
-                    if (Items[i].Name == "Backstage passes to a TAFKAL80ETC concert")
+                    else if (item.SellIn <= 5)
                     {
-                        if (Items[i].SellIn < 11)
-                        {
-                            if (Items[i].Quality < 50)
-                            {
-                                Items[i].Quality = Items[i].Quality + 1;
-                            }
-                        }
-
-                        if (Items[i].SellIn < 6)
-                        {
-                            if (Items[i].Quality < 50)
-                            {
-                                Items[i].Quality = Items[i].Quality + 1;
-                            }
-                        }
+                        item.Quality += 3;
                     }
-                }
-            }
-
-            if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
-            {
-                Items[i].SellIn = Items[i].SellIn - 1;
-            }
-
-            if (Items[i].SellIn < 0)
-            {
-                if (Items[i].Name != "Aged Brie")
-                {
-                    if (Items[i].Name != "Backstage passes to a TAFKAL80ETC concert")
+                    else if (item.SellIn > 5 && item.SellIn <= 10)
                     {
-                        if (Items[i].Quality > 0)
-                        {
-                            if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
-                            {
-                                Items[i].Quality = Items[i].Quality - 1;
-                            }
-                        }
+                        item.Quality += 2;
                     }
                     else
                     {
-                        Items[i].Quality = Items[i].Quality - Items[i].Quality;
+                        item.Quality++;
                     }
-                }
-                else
-                {
-                    if (Items[i].Quality < 50)
-                    {
-                        Items[i].Quality = Items[i].Quality + 1;
-                    }
-                }
+                    break;
+                case GildedRoseConstants.Sulfuras:
+                    item.Quality = 80;
+                    break;
+                case GildedRoseConstants.Conjured:
+                    item.Quality -= item.SellIn <= 0 ? 2 : 1;
+                    break;
+                default:
+                    item.Quality -= item.SellIn <= 0 ? 2 : 1;
+                    break;
+            }
+
+            if (!itemType.Equals(GildedRoseConstants.Sulfuras))
+            {
+                if (item.Quality < 0) { item.Quality = 0; }
+                if (item.Quality > 50) { item.Quality = 50; }
+                item.SellIn--;
             }
         }
+        catch (Exception ex)
+        {
+            //Handle exception
+        }
+    }
+
+    private string DeterminType(Item item)
+    {
+        return item.Name switch
+        {
+            string s when s.Contains("Aged Brie", StringComparison.OrdinalIgnoreCase) => "Aged Brie",
+            string s when s.Contains("Backstage passes", StringComparison.OrdinalIgnoreCase) => "Backstage passes",
+            string s when s.Contains("Sulfuras", StringComparison.OrdinalIgnoreCase) => "Sulfuras",
+            string s when s.Contains("Conjured", StringComparison.OrdinalIgnoreCase) => "Conjured",
+            _ => "Default"
+        };
     }
 }
