@@ -63,8 +63,6 @@ public class GildedRose
                     item.Quality = 80;
                     break;
                 case GildedRoseConstants.Conjured:
-                    item.Quality -= item.SellIn <= 0 ? 2 : 1;
-                    break;
                 default:
                     item.Quality -= item.SellIn <= 0 ? 2 : 1;
                     break;

@@ -1,10 +1,10 @@
 namespace GildedRoseKata
 {
-    internal static class GildedRoseConstants
+    public static class GildedRoseConstants
     {
-        internal const string AgedBrie = "Aged Brie";
-        internal const string BackstagePasses = "Backstage passes";
-        internal const string Sulfuras = "Sulfuras";
-        internal const string Conjured = "Conjured";
+        public const string AgedBrie = "Aged Brie";
+        public const string BackstagePasses = "Backstage passes";
+        public const string Sulfuras = "Sulfuras";
+        public const string Conjured = "Conjured";
     }
 }
