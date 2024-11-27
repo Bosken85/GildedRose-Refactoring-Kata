@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace GildedRoseKata;
 
@@ -9,28 +10,19 @@ public class GildedRose
 
     public GildedRose(IList<Item> items)
     {
-        ArgumentNullException.ThrowIfNull(items);
-
         this.Items = items;
     }
 
     public void UpdateQuality()
     {
-        try
+        for (var i = 0; i < Items.Count; i++)
         {
-            for (var i = 0; i < Items.Count; i++)
-            {
-                var item = Items[i];
-                UpdateQuality(item);
-            }
-        }
-        catch (Exception)
-        {
-            //Handle exception
+            var item = Items[i];
+            UpdateQuality(item);
         }
     }
 
-    private void UpdateQuality(Item item)
+    private static void UpdateQuality(Item item)
     {
         try
         {
@@ -63,6 +55,7 @@ public class GildedRose
                     item.Quality = 80;
                     break;
                 case GildedRoseConstants.Conjured:
+                    // TODO: Issue 001: Is the verified test data not in line with the assignment?
                 default:
                     item.Quality -= item.SellIn <= 0 ? 2 : 1;
                     break;
@@ -77,11 +70,15 @@ public class GildedRose
         }
         catch (Exception ex)
         {
-            //Handle exception
+            /**
+             * Handle exception by logging to some monitoring system.
+             * Silence the exception to keep the application running
+             * and/or implement code to mitegate the exception.
+            **/
         }
     }
 
-    private string DeterminType(Item item)
+    private static string DeterminType(Item item)
     {
         return item.Name switch
         {
@@ -91,5 +88,16 @@ public class GildedRose
             string s when s.Contains("Conjured", StringComparison.OrdinalIgnoreCase) => "Conjured",
             _ => "Default"
         };
+    }
+
+    public override string ToString()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine("name, sellIn, quality");
+        for (var j = 0; j < Items.Count; j++)
+        {
+            sb.AppendLine($"{Items[j].Name}, {Items[j].SellIn}, {Items[j].Quality}");
+        }
+        return sb.ToString();
     }
 }

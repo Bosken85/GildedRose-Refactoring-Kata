@@ -6,6 +6,8 @@ namespace GildedRoseTests;
 
 public class GildedRoseTest
 {
+    #region DefaultItem
+
     [Test]
     public void DefaultItemDegradesByOneWhenSellInDateNotExceeded()
     {
@@ -26,15 +28,9 @@ public class GildedRoseTest
         Assert.That(items[0].SellIn, Is.EqualTo(-1));
     }
 
-    [Test]
-    public void AgedBrieImpvrovesByOneWhenSellInDateNotExceeded()
-    {
-        var items = new List<Item> { new Item { Name = GildedRoseConstants.AgedBrie, SellIn = 10, Quality = 10 } };
-        var app = new GildedRose(items);
-        app.UpdateQuality();
-        Assert.That(items[0].Quality, Is.EqualTo(11));
-        Assert.That(items[0].SellIn, Is.EqualTo(9));
-    }
+    #endregion
+
+    #region Sulfuras
 
     [Test]
     public void SulfurasNeverSells()
@@ -46,12 +42,26 @@ public class GildedRoseTest
     }
 
     [Test]
-    public void SulfurasNeverIsAlwaysQuality80()
+    public void SulfurasIsAlwaysQuality80()
     {
         var items = new List<Item> { new Item { Name = GildedRoseConstants.Sulfuras, SellIn = 10, Quality = 10 } };
         var app = new GildedRose(items);
         app.UpdateQuality();
         Assert.That(items[0].Quality, Is.EqualTo(80));
+    }
+
+    #endregion
+
+    #region AgedBrie
+
+    [Test]
+    public void AgedBrieImpvrovesByOneWhenSellInDateNotExceeded()
+    {
+        var items = new List<Item> { new Item { Name = GildedRoseConstants.AgedBrie, SellIn = 10, Quality = 10 } };
+        var app = new GildedRose(items);
+        app.UpdateQuality();
+        Assert.That(items[0].Quality, Is.EqualTo(11));
+        Assert.That(items[0].SellIn, Is.EqualTo(9));
     }
 
     [Test]
@@ -63,6 +73,78 @@ public class GildedRoseTest
         Assert.That(items[0].Quality, Is.EqualTo(12));
         Assert.That(items[0].SellIn, Is.EqualTo(-1));
     }
+
+    #endregion
+
+    #region BackstagePasses
+
+    [Test]
+    public void BackstagePassesQualityZeroIfSellInDateExceeded()
+    {
+        var items = new List<Item> { new Item { Name = GildedRoseConstants.BackstagePasses, SellIn = 0, Quality = 10 } };
+        var app = new GildedRose(items);
+        app.UpdateQuality();
+        Assert.That(items[0].Quality, Is.EqualTo(0));
+        Assert.That(items[0].SellIn, Is.EqualTo(-1));
+    }
+
+    [Test]
+    public void BackstagePassesQualityPlus1IfSellInDateAboveTen()
+    {
+        var items = new List<Item> { new Item { Name = GildedRoseConstants.BackstagePasses, SellIn = 20, Quality = 10 } };
+        var app = new GildedRose(items);
+        app.UpdateQuality();
+        Assert.That(items[0].Quality, Is.EqualTo(11));
+        Assert.That(items[0].SellIn, Is.EqualTo(19));
+    }
+
+    [Test]
+    public void BackstagePassesQualityPlus2IfSellInDateUnderTen()
+    {
+        var items = new List<Item> { new Item { Name = GildedRoseConstants.BackstagePasses, SellIn = 10, Quality = 10 } };
+        var app = new GildedRose(items);
+        app.UpdateQuality();
+        Assert.That(items[0].Quality, Is.EqualTo(12));
+        Assert.That(items[0].SellIn, Is.EqualTo(9));
+    }
+
+    [Test]
+    public void BackstagePassesQualityPlus3IfSellInDateUnderFive()
+    {
+        var items = new List<Item> { new Item { Name = GildedRoseConstants.BackstagePasses, SellIn = 5, Quality = 10 } };
+        var app = new GildedRose(items);
+        app.UpdateQuality();
+        Assert.That(items[0].Quality, Is.EqualTo(13));
+        Assert.That(items[0].SellIn, Is.EqualTo(4));
+    }
+
+    #endregion
+
+    #region Conjured
+
+    [Test]
+    public void ConjuredItemDegradesByOneWhenSellInDateNotExceeded()
+    {
+        //TODO: Issue 001: Is the verified test data not in line with the assignment?
+        var items = new List<Item> { new Item { Name = "Conjured", SellIn = 10, Quality = 10 } };
+        var app = new GildedRose(items);
+        app.UpdateQuality();
+        Assert.That(items[0].Quality, Is.EqualTo(9));
+        Assert.That(items[0].SellIn, Is.EqualTo(9));
+    }
+
+    [Test]
+    public void ConjuredItemDegradesByTwoWhenSellInDateExceeded()
+    {
+        // TODO: Issue 001: Is the verified test data not in line with the assignment?
+        var items = new List<Item> { new Item { Name = "Conjured", SellIn = 0, Quality = 10 } };
+        var app = new GildedRose(items);
+        app.UpdateQuality();
+        Assert.That(items[0].Quality, Is.EqualTo(8));
+        Assert.That(items[0].SellIn, Is.EqualTo(-1));
+    }
+
+    #endregion
 
     [Test]
     public void EachItemExceptSulfurasCantBeLowerThan0()
@@ -82,14 +164,5 @@ public class GildedRoseTest
         app.UpdateQuality();
         Assert.That(items[0].Quality, Is.EqualTo(50));
         Assert.That(items[0].SellIn, Is.EqualTo(-1));
-    }
-
-    [Test]
-    public void Foo()
-    {
-        var items = new List<Item> { new Item { Name = "foo", SellIn = 0, Quality = 0 } };
-        var app = new GildedRose(items);
-        app.UpdateQuality();
-        Assert.That(items[0].Name, Is.EqualTo("foo"));
     }
 }

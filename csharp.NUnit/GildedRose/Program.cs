@@ -2,14 +2,34 @@
 using System.Collections.Generic;
 
 namespace GildedRoseKata;
-
 public class Program
 {
     public static void Main(string[] args)
     {
-        Console.WriteLine("OMGHAI!");
+        int days = 2;
+        if (args.Length > 0 )
+            if (int.TryParse(args[0], out days))
+            {
+                /**What is the purpose of this +1? The validated test data depends on this code to validate,
+                 * but it adds an additional day to the requested output since we start counting from index 0
+                 * What is the desired behaviour here?
+                **/
+                days++;
+            }
 
-        IList<Item> items = new List<Item>
+        var app = new GildedRose(Items);
+
+        Console.WriteLine("OMGHAI!");
+        for (var i = 0; i < days; i++)
+        {
+            Console.WriteLine($"-------- day {i} --------");
+            Console.WriteLine(app.ToString());
+            
+            app.UpdateQuality();
+        }
+    }
+
+    private static readonly IList<Item> Items = new List<Item>
         {
             new Item {Name = "+5 Dexterity Vest", SellIn = 10, Quality = 20},
             new Item {Name = "Aged Brie", SellIn = 2, Quality = 0},
@@ -34,28 +54,6 @@ public class Program
                 SellIn = 5,
                 Quality = 49
             },
-            // this conjured item does not work properly yet
             new Item {Name = "Conjured Mana Cake", SellIn = 3, Quality = 6}
         };
-
-        var app = new GildedRose(items);
-
-        int days = 2;
-        if (args.Length > 0)
-        {
-            days = int.Parse(args[0]) + 1;
-        }
-
-        for (var i = 0; i < days; i++)
-        {
-            Console.WriteLine("-------- day " + i + " --------");
-            Console.WriteLine("name, sellIn, quality");
-            for (var j = 0; j < items.Count; j++)
-            {
-                Console.WriteLine(items[j].Name + ", " + items[j].SellIn + ", " + items[j].Quality);
-            }
-            Console.WriteLine("");
-            app.UpdateQuality();
-        }
-    }
 }
